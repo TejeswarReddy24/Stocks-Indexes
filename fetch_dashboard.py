@@ -11,6 +11,18 @@ NSE_INDEXES = [
     {"label": "NIFTY SMALLCAP 100 (closest available)", "api_name": "NIFTY SMALLCAP 100"},
     {"label": "NIFTY BANK", "api_name": "NIFTY BANK"},
     {"label": "NIFTY IT", "api_name": "NIFTY IT"},
+    {"label": "NIFTY 100", "api_name": "NIFTY 100"},
+    {"label": "NIFTY FINANCIAL SERVICES", "api_name": "NIFTY FINANCIAL SERVICES"},
+    {"label": "NIFTY SMALLCAP 250", "api_name": "NIFTY SMALLCAP 250"},
+    {"label": "NIFTY MIDSMALLCAP 400", "api_name": "NIFTY MIDSMALLCAP 400"},
+    {"label": "NIFTY COMMODITIES", "api_name": "NIFTY COMMODITIES"},
+    {"label": "NIFTY FMCG", "api_name": "NIFTY FMCG"},
+    {"label": "NIFTY PHARMA", "api_name": "NIFTY PHARMA"},
+    {"label": "NIFTY AUTO", "api_name": "NIFTY AUTO"},
+    {"label": "NIFTY METAL", "api_name": "NIFTY METAL"},
+    {"label": "NIFTY ENERGY", "api_name": "NIFTY ENERGY"},
+    {"label": "NIFTY INFRASTRUCTURE", "api_name": "NIFTY INFRASTRUCTURE"},
+    {"label": "NIFTY REALTY", "api_name": "NIFTY REALTY"},
 ]
 
 STOCKS = [
@@ -20,23 +32,10 @@ STOCKS = [
     "NTPC.NS",
 ]
 
-MUTUAL_FUNDS = [
-    # ETFs
-    # Mutual fund growth schemes (BSE scheme codes used when required)
-    "0P00005WL6.BO", # UTI Nifty 50 Index Fund (Growth) - BSE code
-    "0P0001KR2S.BO", # Kotak Smallcap 250 (Growth) - BSE code candidate
-]
-
 # ETFs we want to treat as stocks (show on stock table)
 ETF_SYMBOLS = [
     "GOLDBEES.NS",   # Nippon India Gold BeES (ETF)
     "SILVERBEES.NS", # Nippon India Silver BeES (ETF)
-]
-
-# Add Kotak index funds (treated as mutual funds per user request)
-MUTUAL_FUNDS += [
-    "NEXT50ETF.NS",
-    "MID150.NS",
 ]
 
 # Friendly display names for symbols that use BSE scheme codes or unclear names
@@ -148,33 +147,7 @@ def fetch_stock_rows():
     return rows
 
 
-def fetch_mutual_fund_rows():
-    rows = []
-    for symbol in MUTUAL_FUNDS:
-        ticker = yf.Ticker(symbol)
-        info = ticker.info
-        last = safe_float(info.get("regularMarketPrice") or info.get("previousClose") or info.get("nav"))
-        # Yahoo may expose NAV fields under different keys; try common ones
-        high_52w = safe_float(info.get("fiftyTwoWeekHigh") or info.get("yearHigh") or info.get("52WeekHigh"))
-        low_52w = safe_float(info.get("fiftyTwoWeekLow") or info.get("yearLow") or info.get("52WeekLow"))
-
-        down_from_high = ((high_52w - last) / high_52w * 100.0) if high_52w else 0.0
-        up_from_low = ((last - low_52w) / low_52w * 100.0) if low_52w else 0.0
-
-        name = SYMBOL_LABELS.get(symbol) or info.get("shortName") or info.get("longName") or symbol
-        rows.append({
-            "symbol": symbol,
-            "name": name,
-            "last": last,
-            "high_52w": high_52w,
-            "low_52w": low_52w,
-            "down_from_high": down_from_high,
-            "up_from_low": up_from_low,
-        })
-    return rows
-
-
-def render_html(indices, stocks, mutual_funds):
+def render_html(indices, stocks):
     with open(TEMPLATE_FILE, "r", encoding="utf-8") as fd:
         template = Template(fd.read())
 
@@ -182,7 +155,6 @@ def render_html(indices, stocks, mutual_funds):
         updated=datetime.datetime.now(datetime.timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S %Z"),
         indices=indices,
         stocks=stocks,
-        mutual_funds=mutual_funds,
     )
 
 
@@ -190,8 +162,7 @@ def main():
     raw_index_data = fetch_nse_index_data()
     index_rows = format_index_rows(raw_index_data)
     stock_rows = fetch_stock_rows()
-    mf_rows = fetch_mutual_fund_rows()
-    html = render_html(index_rows, stock_rows, mf_rows)
+    html = render_html(index_rows, stock_rows)
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as fd:
