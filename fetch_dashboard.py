@@ -20,6 +20,17 @@ STOCKS = [
     "NTPC.NS",
 ]
 
+MUTUAL_FUNDS = [
+    # ETFs
+    "GOLDBEES.NS",   # Nippon India ETF - Gold BeES
+    "SILVERBEES.NS", # Nippon India ETF - Silver BeES
+    # Index / Mutual fund tickers (BSE/NSI identifiers)
+    "0P00005WL6.BO", # UTI Nifty 50 Index Fund (BSE code candidate)
+    "NEXT50ETF.NS",  # Kotak Next 50 ETF
+    "MID150.NS",     # Kotak Midcap 150 ETF
+    "0P0001KR2S.BO", # candidate Kotak Smallcap (BSE code)
+]
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_FILE = os.path.join(BASE_DIR, "dashboard_template.html")
 OUTPUT_DIR = os.path.join(BASE_DIR, "public")
@@ -114,7 +125,32 @@ def fetch_stock_rows():
     return rows
 
 
-def render_html(indices, stocks):
+def fetch_mutual_fund_rows():
+    rows = []
+    for symbol in MUTUAL_FUNDS:
+        ticker = yf.Ticker(symbol)
+        info = ticker.info
+        last = safe_float(info.get("regularMarketPrice") or info.get("previousClose") or info.get("nav"))
+        # Yahoo may expose NAV fields under different keys; try common ones
+        high_52w = safe_float(info.get("fiftyTwoWeekHigh") or info.get("yearHigh") or info.get("52WeekHigh"))
+        low_52w = safe_float(info.get("fiftyTwoWeekLow") or info.get("yearLow") or info.get("52WeekLow"))
+
+        down_from_high = ((high_52w - last) / high_52w * 100.0) if high_52w else 0.0
+        up_from_low = ((last - low_52w) / low_52w * 100.0) if low_52w else 0.0
+
+        rows.append({
+            "symbol": symbol,
+            "name": info.get("shortName") or info.get("longName") or symbol,
+            "last": last,
+            "high_52w": high_52w,
+            "low_52w": low_52w,
+            "down_from_high": down_from_high,
+            "up_from_low": up_from_low,
+        })
+    return rows
+
+
+def render_html(indices, stocks, mutual_funds):
     with open(TEMPLATE_FILE, "r", encoding="utf-8") as fd:
         template = Template(fd.read())
 
@@ -122,6 +158,7 @@ def render_html(indices, stocks):
         updated=datetime.datetime.now(datetime.timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S %Z"),
         indices=indices,
         stocks=stocks,
+        mutual_funds=mutual_funds,
     )
 
 
@@ -129,7 +166,8 @@ def main():
     raw_index_data = fetch_nse_index_data()
     index_rows = format_index_rows(raw_index_data)
     stock_rows = fetch_stock_rows()
-    html = render_html(index_rows, stock_rows)
+    mf_rows = fetch_mutual_fund_rows()
+    html = render_html(index_rows, stock_rows, mf_rows)
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as fd:
