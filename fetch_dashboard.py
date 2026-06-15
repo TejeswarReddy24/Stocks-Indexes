@@ -9,12 +9,15 @@ NSE_INDEXES = [
     {"label": "NIFTY NEXT 50", "api_name": "NIFTY NEXT 50"},
     {"label": "NIFTY MIDCAP 150", "api_name": "NIFTY MIDCAP 150"},
     {"label": "NIFTY SMALLCAP 100 (closest available)", "api_name": "NIFTY SMALLCAP 100"},
+    {"label": "NIFTY BANK", "api_name": "NIFTY BANK"},
+    {"label": "NIFTY IT", "api_name": "NIFTY IT"},
 ]
 
 STOCKS = [
     "RELIANCE.NS",
     "TCS.NS",
     "INFY.NS",
+    "NTPC.NS",
 ]
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
