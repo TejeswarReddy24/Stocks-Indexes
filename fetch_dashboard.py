@@ -22,14 +22,32 @@ STOCKS = [
 
 MUTUAL_FUNDS = [
     # ETFs
-    "GOLDBEES.NS",   # Nippon India ETF - Gold BeES
-    "SILVERBEES.NS", # Nippon India ETF - Silver BeES
-    # Index / Mutual fund tickers (BSE/NSI identifiers)
-    "0P00005WL6.BO", # UTI Nifty 50 Index Fund (BSE code candidate)
-    "NEXT50ETF.NS",  # Kotak Next 50 ETF
-    "MID150.NS",     # Kotak Midcap 150 ETF
-    "0P0001KR2S.BO", # candidate Kotak Smallcap (BSE code)
+    # Mutual fund growth schemes (BSE scheme codes used when required)
+    "0P00005WL6.BO", # UTI Nifty 50 Index Fund (Growth) - BSE code
+    "0P0001KR2S.BO", # Kotak Smallcap 250 (Growth) - BSE code candidate
 ]
+
+# ETFs we want to treat as stocks (show on stock table)
+ETF_SYMBOLS = [
+    "GOLDBEES.NS",   # Nippon India Gold BeES (ETF)
+    "SILVERBEES.NS", # Nippon India Silver BeES (ETF)
+]
+
+# Add Kotak index funds (treated as mutual funds per user request)
+MUTUAL_FUNDS += [
+    "NEXT50ETF.NS",
+    "MID150.NS",
+]
+
+# Friendly display names for symbols that use BSE scheme codes or unclear names
+SYMBOL_LABELS = {
+    "GOLDBEES.NS": "Nippon India ETF - Gold BeES (ETF)",
+    "SILVERBEES.NS": "Nippon India ETF - Silver BeES (ETF)",
+    "NEXT50ETF.NS": "Kotak Next 50 (Index Fund - Growth)",
+    "MID150.NS": "Kotak Midcap 150 (Index Fund - Growth)",
+    "0P00005WL6.BO": "UTI Nifty 50 Index Fund (Growth)",
+    "0P0001KR2S.BO": "Kotak Smallcap 250 (Growth)",
+}
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_FILE = os.path.join(BASE_DIR, "dashboard_template.html")
@@ -103,7 +121,9 @@ def format_index_rows(raw_data):
 
 def fetch_stock_rows():
     rows = []
-    for symbol in STOCKS:
+    # include ETFs in the stock table
+    all_stock_symbols = STOCKS + ETF_SYMBOLS
+    for symbol in all_stock_symbols:
         ticker = yf.Ticker(symbol)
         info = ticker.info
         last = safe_float(info.get("regularMarketPrice") or info.get("previousClose"))
@@ -113,9 +133,12 @@ def fetch_stock_rows():
         down_from_high = ((high_52w - last) / high_52w * 100.0) if high_52w else 0.0
         up_from_low = ((last - low_52w) / low_52w * 100.0) if low_52w else 0.0
 
+        # friendly name: prefer SYMBOL_LABELS, else use ticker info
+        name = SYMBOL_LABELS.get(symbol) or info.get("shortName") or info.get("longName") or symbol
+
         rows.append({
             "symbol": symbol,
-            "name": info.get("shortName") or info.get("longName") or symbol,
+            "name": name,
             "last": last,
             "high_52w": high_52w,
             "low_52w": low_52w,
@@ -138,9 +161,10 @@ def fetch_mutual_fund_rows():
         down_from_high = ((high_52w - last) / high_52w * 100.0) if high_52w else 0.0
         up_from_low = ((last - low_52w) / low_52w * 100.0) if low_52w else 0.0
 
+        name = SYMBOL_LABELS.get(symbol) or info.get("shortName") or info.get("longName") or symbol
         rows.append({
             "symbol": symbol,
-            "name": info.get("shortName") or info.get("longName") or symbol,
+            "name": name,
             "last": last,
             "high_52w": high_52w,
             "low_52w": low_52w,
