@@ -19,6 +19,10 @@
     .negative { color: #c41d2c; }
     .note { font-size: 0.95rem; color: #555; margin-top: 8px; }
     .footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #d8dee7; color: #6b7382; }
+    .buy-signal { background-color: #d4edda !important; }
+    .sell-signal { background-color: #f8d7da !important; }
+    .buy-badge { background-color: #28a745; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; }
+    .sell-badge { background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; }
     @media (max-width: 768px) {
       body { padding: 12px; }
       .page { padding: 0; }
@@ -92,6 +96,70 @@
           {% endfor %}
         </tbody>
       </table>
+    </section>
+
+    <section>
+      <h2>🟢 Buy Signals (NIFTY 50 - Near 52W Low)</h2>
+      {% if buy_signals %}
+      <table>
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Current Price</th>
+            <th>52W Low</th>
+            <th>% Up from Low</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stock in buy_signals %}
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>{{ stock.symbol }}</td>
+            <td>{{ stock.name }}</td>
+            <td>{{ stock.last | round(2) }}</td>
+            <td>{{ stock.low_52w | round(2) }}</td>
+            <td class="positive">{{ stock.up_from_low | round(2) }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color: #555;">No buy signals currently available.</p>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>🔴 Sell Signals (NIFTY 50 - Near 52W High)</h2>
+      {% if sell_signals %}
+      <table>
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Current Price</th>
+            <th>52W High</th>
+            <th>% Down from High</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stock in sell_signals %}
+          <tr class="sell-signal">
+            <td><span class="sell-badge">SELL</span></td>
+            <td>{{ stock.symbol }}</td>
+            <td>{{ stock.name }}</td>
+            <td>{{ stock.last | round(2) }}</td>
+            <td>{{ stock.high_52w | round(2) }}</td>
+            <td class="negative">{{ stock.down_from_high | round(2) }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color: #555;">No sell signals currently available.</p>
+      {% endif %}
     </section>
 
     <div class="footer">

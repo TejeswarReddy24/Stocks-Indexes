@@ -38,6 +38,24 @@ ETF_SYMBOLS = [
     "SILVERBEES.NS", # Nippon India Silver BeES (ETF)
 ]
 
+# NIFTY 50 constituents (as of 2024)
+NIFTY_50_SYMBOLS = [
+    "RELIANCE.NS", "TCS.NS", "INFY.NS", "HINDUNILVR.NS", "ICICIBANK.NS",
+    "HDFC.NS", "ITC.NS", "SBIN.NS", "WIPRO.NS", "MARUTI.NS",
+    "LT.NS", "BAJAJ-AUTO.NS", "ASIANPAINT.NS", "TECHM.NS", "HCLTECH.NS",
+    "SUNPHARMA.NS", "ULTRACEMCO.NS", "NTPC.NS", "POWERGRID.NS", "HEROMOTOCO.NS",
+    "BHARTIARTL.NS", "DRREDDY.NS", "BAJAJFINSV.NS", "JSWSTEEL.NS", "ADANIPORTS.NS",
+    "TATAMOTORS.NS", "BAJAJ-FSL.NS", "CIPLA.NS", "EICHERMOT.NS", "ADANIGREEN.NS",
+    "GRASIM.NS", "SBILIFE.NS", "AXISBANK.NS", "KOTAKBANK.NS", "INDIGO.NS",
+    "BEL.NS", "ONGC.NS", "COALINDIA.NS", "TATASTEEL.NS", "NESTLEIND.NS",
+    "M&M.NS", "SHRIRAMFIN.NS", "LTIM.NS", "DLF.NS", "IDFCFIRSTB.NS",
+    "STARTECH.NS", "LUPIN.NS", "AUROPHARMA.NS", "BANKBARODA.NS", "BPCL.NS",
+]
+
+# Thresholds for buy/sell signals (percentage from 52W low/high)
+BUY_SIGNAL_THRESHOLD = 7.0    # Within 7% of 52W low = BUY signal
+SELL_SIGNAL_THRESHOLD = 5.0   # Within 5% of 52W high = SELL signal
+
 # Friendly display names for symbols that use BSE scheme codes or unclear names
 SYMBOL_LABELS = {
     "GOLDBEES.NS": "Nippon India ETF - Gold BeES (ETF)",
@@ -147,7 +165,58 @@ def fetch_stock_rows():
     return rows
 
 
-def render_html(indices, stocks):
+def fetch_nifty50_signals():
+    """Fetch NIFTY 50 stocks and identify buy/sell signals."""
+    buy_signals = []
+    sell_signals = []
+
+    for symbol in NIFTY_50_SYMBOLS:
+        try:
+            ticker = yf.Ticker(symbol)
+            info = ticker.info
+            last = safe_float(info.get("regularMarketPrice") or info.get("previousClose"))
+            high_52w = safe_float(info.get("fiftyTwoWeekHigh"))
+            low_52w = safe_float(info.get("fiftyTwoWeekLow"))
+
+            if last == 0 or high_52w == 0 or low_52w == 0:
+                continue
+
+            down_from_high = ((high_52w - last) / high_52w * 100.0) if high_52w else 0.0
+            up_from_low = ((last - low_52w) / low_52w * 100.0) if low_52w else 0.0
+
+            name = info.get("shortName") or info.get("longName") or symbol
+
+            # Buy signal: stock is close to 52W low
+            if up_from_low <= BUY_SIGNAL_THRESHOLD:
+                buy_signals.append({
+                    "symbol": symbol,
+                    "name": name,
+                    "last": last,
+                    "low_52w": low_52w,
+                    "up_from_low": up_from_low,
+                })
+
+            # Sell signal: stock is close to 52W high
+            if down_from_high <= SELL_SIGNAL_THRESHOLD:
+                sell_signals.append({
+                    "symbol": symbol,
+                    "name": name,
+                    "last": last,
+                    "high_52w": high_52w,
+                    "down_from_high": down_from_high,
+                })
+        except Exception as e:
+            # Skip if we can't fetch data for this symbol
+            pass
+
+    # Sort by how close to low/high
+    buy_signals.sort(key=lambda x: x["up_from_low"])
+    sell_signals.sort(key=lambda x: x["down_from_high"])
+
+    return buy_signals, sell_signals
+
+
+def render_html(indices, stocks, buy_signals, sell_signals):
     with open(TEMPLATE_FILE, "r", encoding="utf-8") as fd:
         template = Template(fd.read())
 
@@ -155,6 +224,8 @@ def render_html(indices, stocks):
         updated=datetime.datetime.now(datetime.timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S %Z"),
         indices=indices,
         stocks=stocks,
+        buy_signals=buy_signals,
+        sell_signals=sell_signals,
     )
 
 
@@ -162,7 +233,8 @@ def main():
     raw_index_data = fetch_nse_index_data()
     index_rows = format_index_rows(raw_index_data)
     stock_rows = fetch_stock_rows()
-    html = render_html(index_rows, stock_rows)
+    buy_signals, sell_signals = fetch_nifty50_signals()
+    html = render_html(index_rows, stock_rows, buy_signals, sell_signals)
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as fd:
