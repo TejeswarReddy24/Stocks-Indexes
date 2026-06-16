@@ -191,6 +191,7 @@ def fetch_nifty50_signals():
                 buy_signals.append({
                     "symbol": symbol,
                     "name": name,
+                    "type": "Stock",
                     "last": last,
                     "low_52w": low_52w,
                     "up_from_low": up_from_low,
@@ -201,6 +202,7 @@ def fetch_nifty50_signals():
                 sell_signals.append({
                     "symbol": symbol,
                     "name": name,
+                    "type": "Stock",
                     "last": last,
                     "high_52w": high_52w,
                     "down_from_high": down_from_high,
@@ -212,6 +214,99 @@ def fetch_nifty50_signals():
     # Sort by how close to low/high
     buy_signals.sort(key=lambda x: x["up_from_low"])
     sell_signals.sort(key=lambda x: x["down_from_high"])
+
+    return buy_signals, sell_signals
+
+
+def fetch_etf_signals():
+    """Fetch Gold/Silver ETF signals."""
+    buy_signals = []
+    sell_signals = []
+
+    for symbol in ETF_SYMBOLS:
+        try:
+            ticker = yf.Ticker(symbol)
+            info = ticker.info
+            last = safe_float(info.get("regularMarketPrice") or info.get("previousClose"))
+            high_52w = safe_float(info.get("fiftyTwoWeekHigh"))
+            low_52w = safe_float(info.get("fiftyTwoWeekLow"))
+
+            if last == 0 or high_52w == 0 or low_52w == 0:
+                continue
+
+            down_from_high = ((high_52w - last) / high_52w * 100.0) if high_52w else 0.0
+            up_from_low = ((last - low_52w) / low_52w * 100.0) if low_52w else 0.0
+
+            name = SYMBOL_LABELS.get(symbol) or info.get("shortName") or info.get("longName") or symbol
+
+            # Buy signal: ETF is close to 52W low
+            if up_from_low <= BUY_SIGNAL_THRESHOLD:
+                buy_signals.append({
+                    "symbol": symbol,
+                    "name": name,
+                    "type": "ETF",
+                    "last": last,
+                    "low_52w": low_52w,
+                    "up_from_low": up_from_low,
+                })
+
+            # Sell signal: ETF is close to 52W high
+            if down_from_high <= SELL_SIGNAL_THRESHOLD:
+                sell_signals.append({
+                    "symbol": symbol,
+                    "name": name,
+                    "type": "ETF",
+                    "last": last,
+                    "high_52w": high_52w,
+                    "down_from_high": down_from_high,
+                })
+        except Exception as e:
+            pass
+
+    return buy_signals, sell_signals
+
+
+def fetch_index_signals(raw_index_data):
+    """Fetch Index signals from NSE data."""
+    buy_signals = []
+    sell_signals = []
+
+    for config in NSE_INDEXES:
+        item = find_index_item(raw_index_data, config["api_name"])
+        if item is None:
+            continue
+
+        last = safe_float(item.get("last"))
+        year_high = safe_float(item.get("yearHigh"))
+        year_low = safe_float(item.get("yearLow"))
+
+        if last == 0 or year_high == 0 or year_low == 0:
+            continue
+
+        down_from_high = ((year_high - last) / year_high * 100.0) if year_high else 0.0
+        up_from_low = ((last - year_low) / year_low * 100.0) if year_low else 0.0
+
+        # Buy signal: index is close to 52W low
+        if up_from_low <= BUY_SIGNAL_THRESHOLD:
+            buy_signals.append({
+                "symbol": config["api_name"],
+                "name": config["label"],
+                "type": "Index",
+                "last": last,
+                "low_52w": year_low,
+                "up_from_low": up_from_low,
+            })
+
+        # Sell signal: index is close to 52W high
+        if down_from_high <= SELL_SIGNAL_THRESHOLD:
+            sell_signals.append({
+                "symbol": config["api_name"],
+                "name": config["label"],
+                "type": "Index",
+                "last": last,
+                "high_52w": year_high,
+                "down_from_high": down_from_high,
+            })
 
     return buy_signals, sell_signals
 
@@ -233,8 +328,21 @@ def main():
     raw_index_data = fetch_nse_index_data()
     index_rows = format_index_rows(raw_index_data)
     stock_rows = fetch_stock_rows()
-    buy_signals, sell_signals = fetch_nifty50_signals()
-    html = render_html(index_rows, stock_rows, buy_signals, sell_signals)
+    
+    # Fetch all signals
+    nifty50_buy, nifty50_sell = fetch_nifty50_signals()
+    etf_buy, etf_sell = fetch_etf_signals()
+    index_buy, index_sell = fetch_index_signals(raw_index_data)
+    
+    # Merge all signals
+    all_buy_signals = nifty50_buy + etf_buy + index_buy
+    all_sell_signals = nifty50_sell + etf_sell + index_sell
+    
+    # Sort by proximity
+    all_buy_signals.sort(key=lambda x: x["up_from_low"])
+    all_sell_signals.sort(key=lambda x: x["down_from_high"])
+    
+    html = render_html(index_rows, stock_rows, all_buy_signals, all_sell_signals)
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as fd:

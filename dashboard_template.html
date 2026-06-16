@@ -99,12 +99,13 @@
     </section>
 
     <section>
-      <h2>🟢 Buy Signals (NIFTY 50 - Near 52W Low)</h2>
+      <h2>🟢 Buy Signals (Near 52W Low - NIFTY 50 Stocks, ETFs, Indices)</h2>
       {% if buy_signals %}
       <table>
         <thead>
           <tr>
             <th>Signal</th>
+            <th>Type</th>
             <th>Symbol</th>
             <th>Name</th>
             <th>Current Price</th>
@@ -116,6 +117,7 @@
           {% for stock in buy_signals %}
           <tr class="buy-signal">
             <td><span class="buy-badge">BUY</span></td>
+            <td>{{ stock.type }}</td>
             <td>{{ stock.symbol }}</td>
             <td>{{ stock.name }}</td>
             <td>{{ stock.last | round(2) }}</td>
@@ -131,12 +133,13 @@
     </section>
 
     <section>
-      <h2>🔴 Sell Signals (NIFTY 50 - Near 52W High)</h2>
+      <h2>🔴 Sell Signals (Near 52W High - NIFTY 50 Stocks, ETFs, Indices)</h2>
       {% if sell_signals %}
       <table>
         <thead>
           <tr>
             <th>Signal</th>
+            <th>Type</th>
             <th>Symbol</th>
             <th>Name</th>
             <th>Current Price</th>
@@ -148,6 +151,7 @@
           {% for stock in sell_signals %}
           <tr class="sell-signal">
             <td><span class="sell-badge">SELL</span></td>
+            <td>{{ stock.type }}</td>
             <td>{{ stock.symbol }}</td>
             <td>{{ stock.name }}</td>
             <td>{{ stock.last | round(2) }}</td>
