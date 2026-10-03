@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>India Index & Stock Dashboard</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f4f7fb; color: #1b2130; }
+    .page { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    header { margin-bottom: 24px; }
+    h1 { margin: 0; font-size: 2.2rem; }
+    p.subtitle { margin: 8px 0 0; color: #555; }
+    section { margin-top: 28px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; background: #fff; }
+    th, td { padding: 12px 14px; border: 1px solid #d8dee7; text-align: left; }
+    th { background: #eef3fb; color: #172a4d; }
+    tr:nth-child(even) { background: #fbfcfe; }
+    .positive { color: #0b7a3f; }
+    .negative { color: #c41d2c; }
+    .note { font-size: 0.95rem; color: #555; margin-top: 8px; }
+    .footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #d8dee7; color: #6b7382; }
+    .buy-signal { background-color: #d4edda !important; }
+    .sell-signal { background-color: #f8d7da !important; }
+    .buy-badge { background-color: #28a745; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; }
+    .sell-badge { background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; }
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      .page { padding: 0; }
+      table, th, td { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>India Index & Stock Dashboard</h1>
+      <p class="subtitle">Live reference for Nifty indices and your selected stocks.</p>
+      <p class="note">Last updated: 2026-10-03 08:44:53 UTC</p>
+    </header>
+
+    <section>
+      <h2>Indices</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Index</th>
+            <th>Last</th>
+            <th>52W High</th>
+            <th>52W Low</th>
+            <th>Down from 52W High</th>
+            <th>Up from 52W Low</th>
+            <th>Market Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>NIFTY 50</td>
+            <td>22421.95</td>
+            <td>26373.2</td>
+            <td>22182.55</td>
+            <td class="negative">14.98%</td>
+            <td class="positive">1.08%</td>
+            <td class="negative">-0.88%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY NEXT 50</td>
+            <td>68981.35</td>
+            <td>75000.4</td>
+            <td>59896.1</td>
+            <td class="negative">8.03%</td>
+            <td class="positive">15.17%</td>
+            <td class="negative">-1.1%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY MIDCAP 150</td>
+            <td>21643.85</td>
+            <td>23647.5</td>
+            <td>19218.0</td>
+            <td class="negative">8.47%</td>
+            <td class="positive">12.62%</td>
+            <td class="negative">-1.02%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY SMALLCAP 100 (closest available)</td>
+            <td>19058.65</td>
+            <td>20187.8</td>
+            <td>14986.0</td>
+            <td class="negative">5.59%</td>
+            <td class="positive">27.18%</td>
+            <td class="negative">-0.97%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY BANK</td>
+            <td>54450.75</td>
+            <td>61764.85</td>
+            <td>49954.85</td>
+            <td class="negative">11.84%</td>
+            <td class="positive">9.0%</td>
+            <td class="negative">-0.33%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY IT</td>
+            <td>28304.7</td>
+            <td>40301.4</td>
+            <td>25699.1</td>
+            <td class="negative">29.77%</td>
+            <td class="positive">10.14%</td>
+            <td class="positive">2.17%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY 100</td>
+            <td>23516.5</td>
+            <td>26975.15</td>
+            <td>22720.45</td>
+            <td class="negative">12.82%</td>
+            <td class="positive">3.5%</td>
+            <td class="negative">-0.92%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY FINANCIAL SERVICES</td>
+            <td>24556.1</td>
+            <td>28562.5</td>
+            <td>23373.95</td>
+            <td class="negative">14.03%</td>
+            <td class="positive">5.06%</td>
+            <td class="negative">-0.38%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY SMALLCAP 250</td>
+            <td>17589.05</td>
+            <td>18551.0</td>
+            <td>14143.45</td>
+            <td class="negative">5.19%</td>
+            <td class="positive">24.36%</td>
+            <td class="negative">-1.18%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY MIDSMALLCAP 400</td>
+            <td>20194.95</td>
+            <td>21770.3</td>
+            <td>17390.85</td>
+            <td class="negative">7.24%</td>
+            <td class="positive">16.12%</td>
+            <td class="negative">-1.08%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY COMMODITIES</td>
+            <td>9130.25</td>
+            <td>10569.65</td>
+            <td>8928.45</td>
+            <td class="negative">13.62%</td>
+            <td class="positive">2.26%</td>
+            <td class="negative">-1.93%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY FMCG</td>
+            <td>43789.85</td>
+            <td>57445.2</td>
+            <td>43442.3</td>
+            <td class="negative">23.77%</td>
+            <td class="positive">0.8%</td>
+            <td class="negative">-1.61%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY PHARMA</td>
+            <td>26311.55</td>
+            <td>27255.05</td>
+            <td>21149.9</td>
+            <td class="negative">3.46%</td>
+            <td class="positive">24.41%</td>
+            <td class="negative">-0.48%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY AUTO</td>
+            <td>25384.95</td>
+            <td>29865.5</td>
+            <td>23560.1</td>
+            <td class="negative">15.0%</td>
+            <td class="positive">7.75%</td>
+            <td class="negative">-3.46%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY METAL</td>
+            <td>12460.7</td>
+            <td>13931.35</td>
+            <td>9968.4</td>
+            <td class="negative">10.56%</td>
+            <td class="positive">25.0%</td>
+            <td class="negative">-2.35%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY ENERGY</td>
+            <td>36388.15</td>
+            <td>41828.55</td>
+            <td>32890.3</td>
+            <td class="negative">13.01%</td>
+            <td class="positive">10.63%</td>
+            <td class="negative">-0.68%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY INFRASTRUCTURE</td>
+            <td>8605.15</td>
+            <td>9792.6</td>
+            <td>8426.65</td>
+            <td class="negative">12.13%</td>
+            <td class="positive">2.12%</td>
+            <td class="negative">-1.47%</td>
+          </tr>
+          
+          <tr>
+            <td>NIFTY REALTY</td>
+            <td>835.0</td>
+            <td>974.5</td>
+            <td>638.65</td>
+            <td class="negative">14.32%</td>
+            <td class="positive">30.74%</td>
+            <td class="negative">-1.46%</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Stock watchlist and ETFs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Last</th>
+            <th>52W High</th>
+            <th>52W Low</th>
+            <th>Down from 52W High</th>
+            <th>Up from 52W Low</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>RELIANCE.NS</td>
+            <td>RELIANCE INDUSTRIES LTD</td>
+            <td>1167.7</td>
+            <td>1611.8</td>
+            <td>1160.8</td>
+            <td class="negative">27.55%</td>
+            <td class="positive">0.59%</td>
+          </tr>
+          
+          <tr>
+            <td>TCS.NS</td>
+            <td>TATA CONSULTANCY SERV LT</td>
+            <td>2075.0</td>
+            <td>3350.0</td>
+            <td>1976.8</td>
+            <td class="negative">38.06%</td>
+            <td class="positive">4.97%</td>
+          </tr>
+          
+          <tr>
+            <td>INFY.NS</td>
+            <td>INFOSYS LIMITED</td>
+            <td>1035.0</td>
+            <td>1728.0</td>
+            <td>980.4</td>
+            <td class="negative">40.1%</td>
+            <td class="positive">5.57%</td>
+          </tr>
+          
+          <tr>
+            <td>NTPC.NS</td>
+            <td>NTPC LTD</td>
+            <td>315.1</td>
+            <td>414.4</td>
+            <td>313.05</td>
+            <td class="negative">23.96%</td>
+            <td class="positive">0.65%</td>
+          </tr>
+          
+          <tr>
+            <td>GOLDBEES.NS</td>
+            <td>Nippon India ETF - Gold BeES (ETF)</td>
+            <td>121.4</td>
+            <td>148.14</td>
+            <td>95.55</td>
+            <td class="negative">18.05%</td>
+            <td class="positive">27.05%</td>
+          </tr>
+          
+          <tr>
+            <td>SILVERBEES.NS</td>
+            <td>Nippon India ETF - Silver BeES (ETF)</td>
+            <td>208.79</td>
+            <td>360.0</td>
+            <td>132.99</td>
+            <td class="negative">42.0%</td>
+            <td class="positive">57.0%</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>🟢 Buy Signals (Near 52W Low - NIFTY 50 Stocks, ETFs, Indices)</h2>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Type</th>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Current Price</th>
+            <th>52W Low</th>
+            <th>% Up from Low</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>ITC.NS</td>
+            <td>ITC LTD</td>
+            <td>255.9</td>
+            <td>254.65</td>
+            <td class="positive">0.49%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>HINDUNILVR.NS</td>
+            <td>HINDUSTAN UNILEVER LTD.</td>
+            <td>1836.0</td>
+            <td>1826.9</td>
+            <td class="positive">0.5%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>RELIANCE.NS</td>
+            <td>RELIANCE INDUSTRIES LTD</td>
+            <td>1167.7</td>
+            <td>1160.8</td>
+            <td class="positive">0.59%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>NTPC.NS</td>
+            <td>NTPC LTD</td>
+            <td>315.1</td>
+            <td>313.05</td>
+            <td class="positive">0.65%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>MARUTI.NS</td>
+            <td>MARUTI SUZUKI INDIA LTD.</td>
+            <td>11386.0</td>
+            <td>11305.0</td>
+            <td class="positive">0.72%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Index</td>
+            <td>NIFTY FMCG</td>
+            <td>NIFTY FMCG</td>
+            <td>43789.85</td>
+            <td>43442.3</td>
+            <td class="positive">0.8%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>ONGC.NS</td>
+            <td>OIL AND NATURAL GAS CORP.</td>
+            <td>222.37</td>
+            <td>220.6</td>
+            <td class="positive">0.8%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>BHARTIARTL.NS</td>
+            <td>BHARTI AIRTEL LIMITED</td>
+            <td>1741.1</td>
+            <td>1726.3</td>
+            <td class="positive">0.86%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Index</td>
+            <td>NIFTY 50</td>
+            <td>NIFTY 50</td>
+            <td>22421.95</td>
+            <td>22182.55</td>
+            <td class="positive">1.08%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>BEL.NS</td>
+            <td>BHARAT ELECTRONICS LTD</td>
+            <td>383.1</td>
+            <td>378.65</td>
+            <td class="positive">1.18%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>WIPRO.NS</td>
+            <td>WIPRO LTD</td>
+            <td>159.35</td>
+            <td>156.79</td>
+            <td class="positive">1.63%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>M&M.NS</td>
+            <td>MAHINDRA & MAHINDRA LTD</td>
+            <td>2860.0</td>
+            <td>2812.0</td>
+            <td class="positive">1.71%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>POWERGRID.NS</td>
+            <td>POWER GRID CORP. LTD.</td>
+            <td>254.55</td>
+            <td>250.0</td>
+            <td class="positive">1.82%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Index</td>
+            <td>NIFTY INFRASTRUCTURE</td>
+            <td>NIFTY INFRASTRUCTURE</td>
+            <td>8605.15</td>
+            <td>8426.65</td>
+            <td class="positive">2.12%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Index</td>
+            <td>NIFTY COMMODITIES</td>
+            <td>NIFTY COMMODITIES</td>
+            <td>9130.25</td>
+            <td>8928.45</td>
+            <td class="positive">2.26%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>BANKBARODA.NS</td>
+            <td>BANK OF BARODA</td>
+            <td>230.82</td>
+            <td>223.82</td>
+            <td class="positive">3.13%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Index</td>
+            <td>NIFTY 100</td>
+            <td>NIFTY 100</td>
+            <td>23516.5</td>
+            <td>22720.45</td>
+            <td class="positive">3.5%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>ULTRACEMCO.NS</td>
+            <td>ULTRATECH CEMENT LIMITED</td>
+            <td>10710.0</td>
+            <td>10325.0</td>
+            <td class="positive">3.73%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>SBILIFE.NS</td>
+            <td>SBI LIFE INSURANCE CO LTD</td>
+            <td>1721.6</td>
+            <td>1652.9</td>
+            <td class="positive">4.16%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>TCS.NS</td>
+            <td>TATA CONSULTANCY SERV LT</td>
+            <td>2075.0</td>
+            <td>1976.8</td>
+            <td class="positive">4.97%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Index</td>
+            <td>NIFTY FINANCIAL SERVICES</td>
+            <td>NIFTY FINANCIAL SERVICES</td>
+            <td>24556.1</td>
+            <td>23373.95</td>
+            <td class="positive">5.06%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>INFY.NS</td>
+            <td>INFOSYS LIMITED</td>
+            <td>1035.0</td>
+            <td>980.4</td>
+            <td class="positive">5.57%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>AXISBANK.NS</td>
+            <td>AXIS BANK LIMITED</td>
+            <td>1217.1</td>
+            <td>1150.3</td>
+            <td class="positive">5.81%</td>
+          </tr>
+          
+          <tr class="buy-signal">
+            <td><span class="buy-badge">BUY</span></td>
+            <td>Stock</td>
+            <td>LUPIN.NS</td>
+            <td>LUPIN LIMITED</td>
+            <td>2031.2</td>
+            <td>1900.0</td>
+            <td class="positive">6.91%</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    </section>
+
+    <section>
+      <h2>🔴 Sell Signals (Near 52W High - NIFTY 50 Stocks, ETFs, Indices)</h2>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Type</th>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Current Price</th>
+            <th>52W High</th>
+            <th>% Down from High</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr class="sell-signal">
+            <td><span class="sell-badge">SELL</span></td>
+            <td>Index</td>
+            <td>NIFTY PHARMA</td>
+            <td>NIFTY PHARMA</td>
+            <td>26311.55</td>
+            <td>27255.05</td>
+            <td class="negative">3.46%</td>
+          </tr>
+          
+          <tr class="sell-signal">
+            <td><span class="sell-badge">SELL</span></td>
+            <td>Stock</td>
+            <td>AUROPHARMA.NS</td>
+            <td>AUROBINDO PHARMA LTD</td>
+            <td>1676.8</td>
+            <td>1740.0</td>
+            <td class="negative">3.63%</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    </section>
+
+    <div class="footer">
+      <p>Generated by <code>fetch_dashboard.py</code>. Update <code>INDICES</code> and <code>STOCKS</code> in the script to track new symbols.</p>
+    </div>
+  </div>
+</body>
+</html>
